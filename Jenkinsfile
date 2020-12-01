@@ -1,19 +1,26 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'openjdk:11'
+            args  '-v /tmp:/tmp'
+            reuseNode true
+        }
+    }
 
     stages {
         stage('Build') {
             steps {
-                gradlew('build')
+                sh './gradlew clean build'
             }
         }
 
         stage('Test') {
             steps {
-                gradlew('test')
+                sh './gradlew test'
             }
             post {
                 always {
+                    archiveArtifacts artifacts: 'build/libs/**/*.jar', fingerprint: true
                     junit '**/build/test-results/test/TEST-*.xml'
                 }
             }
