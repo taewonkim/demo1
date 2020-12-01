@@ -1,25 +1,16 @@
 pipeline {
-    /*
-    agent {
-        docker {
-            image 'openjdk:11'
-            args  '-v /tmp:/tmp'
-            reuseNode true
-        }
-    }
-    */
     agent any
 
     stages {
         stage('Build') {
             steps {
-                sh './gradle clean build'
+                sh './gradlew clean build'
             }
         }
 
         stage('Test') {
             steps {
-                sh './gradle test'
+                sh './gradlew check'
             }
             post {
                 always {
