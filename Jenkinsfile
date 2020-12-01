@@ -1,4 +1,5 @@
 pipeline {
+    /*
     agent {
         docker {
             image 'openjdk:11'
@@ -6,6 +7,8 @@ pipeline {
             reuseNode true
         }
     }
+    */
+    agent any
 
     stages {
         stage('Build') {
