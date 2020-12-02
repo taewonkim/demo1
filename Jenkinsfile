@@ -1,13 +1,18 @@
 pipeline {
     agent any
 
+    environment {
+        registry = "registry.local/demo1"
+        image = ''
+    }
+    
     stages {
         stage('Build') {
             steps {
                 sh './gradlew clean build'
             }
         }
-
+    
         stage('Test') {
             steps {
                 sh './gradlew check'
@@ -16,6 +21,32 @@ pipeline {
                 always {
                     archiveArtifacts artifacts: 'build/libs/**/*.jar', fingerprint: true
                     junit '**/build/test-results/test/TEST-*.xml'
+                }
+            }
+        }
+
+        stage('Build Image') {
+            steps {
+                script {
+                    image = docker.build registry + ":${env.BUILD_NUMBER}"
+                }
+            }
+        }
+    
+        stage('Push Image') {
+            steps {
+                script {
+                    docker.withRegistry('', '') {
+                        image.push()
+                    }
+                }
+            }
+        }
+
+        stage('Remove Image') {
+            steps {
+                script {
+                    image = docker.build registry + ":${env.BUILD_NUMBER}"
                 }
             }
         }
